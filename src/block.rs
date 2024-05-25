@@ -1,4 +1,4 @@
-use chrono::{DateTime, Local, Utc};
+use chrono::{DateTime, Utc};
 
 struct PowSolution {
     pk: String,
@@ -14,19 +14,32 @@ pub struct Block {
     previous_block_hash: &'static str,
     version: &'static str,
 }
-impl Block {
-    pub fn new(
-        height: u32,
-        hash: &'static str,
-        previous_block_hash: &'static str,
-        version: &'static str,
-    ) -> Block {
-        Block {
-            height: height,
-            timestamp: Local::now().with_timezone(&Utc),
-            hash: hash,
-            previous_block_hash: previous_block_hash,
-            version: version,
+#[derive(Debug)]
+pub struct BlockChain {
+    pub chain: Vec<Block>,
+}
+impl BlockChain {
+    pub fn genesis_block() -> Self {
+        BlockChain {
+            chain: vec![Block {
+                height: 0,
+                timestamp: Utc::now(),
+                hash: "0",
+                previous_block_hash: "0",
+                version: "0",
+            }],
         }
+    }
+
+    pub fn add_block(&mut self) {
+        let old_block = self.chain.last().unwrap();
+        /* Add a new block to the blockchain */
+        self.chain.push(Block {
+            height: old_block.height + 1,
+            timestamp: Utc::now(),
+            hash: "-",
+            previous_block_hash: old_block.hash,
+            version: "0",
+        })
     }
 }
