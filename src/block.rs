@@ -18,23 +18,27 @@ pub struct Block {
     pub data: String,
     pub version: String,
 }
-
+impl Block {
+    fn genesis_block() -> Block {
+        Block {
+            height: 0,
+            timestamp: Utc::now(),
+            hash: hash_it("GenesisBlockNakamoto".to_string()),
+            previous_block_hash: hash_it("0".to_string()),
+            nonce: 01,
+            data: "Nothing yet".to_string(),
+            version: "0".to_string(),
+        }
+    }
+}
 #[derive(Debug)]
 pub struct BlockChain {
     pub chain: Vec<Block>,
 }
 impl BlockChain {
-    pub fn genesis_block() -> Self {
+    pub fn new() -> Self {
         BlockChain {
-            chain: vec![Block {
-                height: 0,
-                timestamp: Utc::now(),
-                hash: hash_it("GenesisBlockNakamoto".to_string()),
-                previous_block_hash: hash_it("0".to_string()),
-                nonce: 01,
-                data: "Nothing yet".to_string(),
-                version: "0".to_string(),
-            }],
+            chain: vec![Block::genesis_block()],
         }
     }
 

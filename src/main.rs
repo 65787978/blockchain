@@ -8,7 +8,7 @@ fn main() {
     println!("Hello, world!");
 
     /* Genesis Block info */
-    let mut block_chain = BlockChain::genesis_block();
+    let mut block_chain = BlockChain::new();
 
     // let mut db = File::create("DB").expect("Creation of database failed!");
 
