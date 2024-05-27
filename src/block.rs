@@ -14,14 +14,14 @@ pub struct Block {
     pub version: String,
 }
 impl Block {
-    fn genesis_block() -> Block {
+    fn genesis_block(data: &Vec<String>) -> Block {
         Block {
             height: 0,
             timestamp: Utc::now(),
-            hash: hash_it("GenesisBlockNakamoto".to_string()),
-            previous_block_hash: hash_it("0".to_string()),
+            hash: hash_data(data.clone()),
+            previous_block_hash: hash_data(vec!["0".to_string()]),
             nonce: 01,
-            data: vec!["GenesisTX".to_string()],
+            data: data.clone(),
             version: "0".to_string(),
         }
     }
@@ -31,9 +31,9 @@ pub struct BlockChain {
     pub chain: Vec<Block>,
 }
 impl BlockChain {
-    pub fn new() -> Self {
+    pub fn new(data: &Vec<String>) -> Self {
         BlockChain {
-            chain: vec![Block::genesis_block()],
+            chain: vec![Block::genesis_block(data)],
         }
     }
 
@@ -43,7 +43,7 @@ impl BlockChain {
         self.chain.push(Block {
             height: old_block.height + 1,
             timestamp: Utc::now(),
-            hash: hash_it(self.chain.last().unwrap().timestamp.to_string()),
+            hash: hash_data(data.clone()), //the data needs to be hashed only after the block is mined
             previous_block_hash: old_block.hash.to_owned(),
             nonce: 01,
             data: data,
@@ -52,8 +52,10 @@ impl BlockChain {
     }
 }
 
-fn hash_it(data: String) -> String {
+fn hash_data(data: Vec<String>) -> String {
     let mut hasher = Blake2b512::new();
-    hasher.update(data);
-    hex::encode(hasher.finalize().to_vec())
+    let string_data = data.join("");
+
+    hasher.update(string_data.as_bytes());
+    hex::encode(hasher.finalize())
 }
