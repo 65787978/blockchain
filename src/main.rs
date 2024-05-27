@@ -16,7 +16,7 @@ fn main() {
         println!("\n{:#?},", block_chain.chain[block_chain.chain.len() - 1]);
         // write!(db, "{:#?},\n", chain[chain.len() - 1]).expect("Saving failed");
 
-        block_chain.add_block();
+        block_chain.add_block(vec!["Transactions".to_string()]);
 
         /* If the chain vec holds more than 5 blocks, remove the first block */
         // if chain.len() > 4 {
