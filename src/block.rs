@@ -5,24 +5,23 @@ use chrono::{DateTime, Utc};
 
 #[derive(Debug)]
 pub struct Block {
-    pub height: u64,
-    pub timestamp: DateTime<Utc>,
-    pub hash: String,
+    pub data: Vec<String>,
     pub previous_block_hash: String,
     pub nonce: u64,
-    pub data: Vec<String>,
-    pub version: String,
+    pub hash: String,
+
+    pub timestamp: DateTime<Utc>,
+    pub height: u64,
 }
 impl Block {
     fn genesis_block(data: &Vec<String>) -> Block {
         Block {
-            height: 0,
-            timestamp: Utc::now(),
-            hash: hash_data(data.clone()),
+            data: data.clone(),
             previous_block_hash: hash_data(vec!["0".to_string()]),
             nonce: 01,
-            data: data.clone(),
-            version: "0".to_string(),
+            hash: hash_data(data.clone()),
+            timestamp: Utc::now(),
+            height: 0,
         }
     }
 }
@@ -40,21 +39,22 @@ impl BlockChain {
     pub fn add_block(&mut self, data: Vec<String>) {
         let old_block = self.chain.last().unwrap();
         /* Add a new block to the blockchain */
-        self.chain.push(Block {
-            height: old_block.height + 1,
-            timestamp: Utc::now(),
-            hash: hash_data(data.clone()), //the data needs to be hashed only after the block is mined
+        let mut new_block = Block {
+            data: data.clone(),
             previous_block_hash: old_block.hash.to_owned(),
             nonce: 01,
-            data: data,
-            version: "0".to_string(),
-        })
+            hash: hash_data(data), //the data needs to be hashed only after the block is mined
+            timestamp: Utc::now(),
+            height: old_block.height + 1,
+        };
+        self.chain.push(new_block);
     }
 }
 
 fn hash_data(data: Vec<String>) -> String {
     let mut hasher = Blake2b512::new();
-    let string_data = data.join("");
+    /*Separating each transaction with ',' and joining them before hashing*/
+    let string_data = data.join(",");
 
     hasher.update(string_data.as_bytes());
     hex::encode(hasher.finalize())
